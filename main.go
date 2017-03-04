@@ -18,7 +18,7 @@ var urls = []string {
 func main() {
 	log.Println("=== RadioCheckerCRON started ===")
 
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(sleep * time.Hour)
 	for {
 		select {
 		case <- ticker.C:
