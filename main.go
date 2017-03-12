@@ -8,11 +8,13 @@ import (
 "errors"
 )
 
-const sleep = 2	// sleep times in hrs
+const (
+	sleep = 2	// sleep times in hrs
+)
 
-var urls = []string {
-	"http://www.paulhaunschmied.com/",
-	// ...
+var remotes = [][3]string {
+	{"http://www.paulhaunschmied.com/"},
+	// {"url", "username", "password"}
 }
 
 func main() {
@@ -22,21 +24,27 @@ func main() {
 	for {
 		select {
 		case <- ticker.C:
-			for _, url := range urls {
-				if err := getHTTP(url); err != nil {
+			for _, r := range remotes {
+				if err := getHTTP(r[0], r[1], r[2]); err != nil {
 					log.Printf("ERR %s\n", err.Error())
 					continue
 				}
-				log.Println("OK  " + url)
+				log.Println("OK  " + r[0])
 			}
 
 		}
 	}
 }
 
-func getHTTP(url string) error {
+func getHTTP(url, username, password string) error {
 
-	resp, err := http.Get(url)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return err
+	}
+	req.SetBasicAuth(username, password)
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
